@@ -1,0 +1,31 @@
+@startuml
+title Account Creation
+
+actor User
+participant Application
+participant WelcomePage
+participant RegistrationPage
+participant Database
+
+User -> Application: Open Application
+activate Application
+Application -> WelcomePage: Prompt to Welcome Page
+activate WelcomePage
+WelcomePage -> User: Display Welcome Page
+User -> WelcomePage: Choose "LOGIN" or "SIGN UP"
+User -> WelcomePage: Select "SIGN UP"
+WelcomePage -> RegistrationPage: Redirect to Registration Page
+activate RegistrationPage
+RegistrationPage -> User: Display Registration Form
+User -> RegistrationPage: Enter name, email, password, confirm password
+User -> RegistrationPage: Press "SIGN UP" button
+RegistrationPage -> Database: Validate user data
+activate Database
+Database --> RegistrationPage: Data validation success
+deactivate Database
+deactivate RegistrationPage
+deactivate WelcomePage
+Application --> User: Redirect to Homepage
+deactivate Application
+
+@enduml

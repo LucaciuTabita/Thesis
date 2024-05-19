@@ -1,0 +1,34 @@
+@startuml
+title Update Material Information
+
+actor User
+participant Application
+participant HomePage
+participant MaterialList
+participant UpdateMaterialPage
+participant Validation
+
+User -> Application: Open Application
+activate Application
+Application -> User: Redirect to Homepage
+User -> HomePage: View Material List
+activate HomePage
+HomePage -> MaterialList: Choose Material
+activate MaterialList
+MaterialList -> User: Display Update Information Option
+User -> MaterialList: Select 'Update Information'
+MaterialList -> UpdateMaterialPage: Redirect to Update Material Page
+activate UpdateMaterialPage
+UpdateMaterialPage -> User: Display Material Information Form
+User -> UpdateMaterialPage: Modify Information
+User -> UpdateMaterialPage: Press 'Update' Button
+UpdateMaterialPage -> Validation: Validate Updated Information
+activate Validation
+Validation --> UpdateMaterialPage: Validation Result
+deactivate Validation
+UpdateMaterialPage --> MaterialList: Material Information Updated
+deactivate UpdateMaterialPage
+deactivate MaterialList
+deactivate HomePage
+deactivate Application
+@enduml

@@ -1,0 +1,34 @@
+@startuml
+'https://plantuml.com/use-case-diagram
+
+left to right direction
+
+(Add material) as (Create)
+(See material details) as (Read)
+(Update material) as (Update)
+(Delete material) as (Delete)
+
+(See list of all materials) as (See all)
+(Take a photo of a material) as (Take photo)
+
+User -down- (Sign Up)
+(Sign Up) ..> (Saves basic information) : <<include>>
+(Sign Up) ..> (Requires name, email and password) : <<include>>
+
+User -down- (Login)
+(Login) ..> (Verifies email and password) : <<include>>
+
+User -down- (Take photo)
+
+User -down- (See all)
+(See all) ..> (Login) : <<include>>
+
+(Read) .> (See all) : <<extends>>
+
+(Update) ..> (Read) : <<extends>>
+(Delete) ..> (Read) : <<extends>>
+
+(Create) ..> (Take photo) : <<extends>>
+(Take photo) ..> (See all) : <<extends>>
+
+@enduml

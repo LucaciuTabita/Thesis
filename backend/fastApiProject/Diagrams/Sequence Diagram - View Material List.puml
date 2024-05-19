@@ -1,0 +1,23 @@
+@startuml
+title View Material List
+
+actor User
+participant Application
+participant HomePage
+participant MaterialList
+
+User -> Application: Open Application
+activate Application
+Application -> User: Redirect to Homepage (if logged in)
+activate User
+User -> HomePage: Display Homepage
+activate HomePage
+HomePage -> MaterialList: Retrieve Material List
+activate MaterialList
+MaterialList --> HomePage: Send Material List
+deactivate MaterialList
+HomePage --> User: Display Material List
+deactivate HomePage
+deactivate User
+deactivate Application
+@enduml

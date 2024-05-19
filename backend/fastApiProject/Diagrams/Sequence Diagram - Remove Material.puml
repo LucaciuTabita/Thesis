@@ -1,0 +1,27 @@
+@startuml
+title Remove Material
+
+actor User
+participant Application
+participant HomePage
+participant MaterialList
+participant RemoveConfirmation
+
+User -> Application: Open Application
+activate Application
+Application -> User: Redirect to Homepage
+User -> HomePage: View Material List
+activate HomePage
+HomePage -> MaterialList: Choose Material
+activate MaterialList
+MaterialList -> User: Display Remove Option
+User -> MaterialList: Select 'Remove'
+MaterialList -> RemoveConfirmation: Confirm Removal
+activate RemoveConfirmation
+RemoveConfirmation --> MaterialList: Removal Confirmed
+deactivate RemoveConfirmation
+MaterialList --> HomePage: Material Removed
+deactivate MaterialList
+deactivate HomePage
+deactivate Application
+@enduml

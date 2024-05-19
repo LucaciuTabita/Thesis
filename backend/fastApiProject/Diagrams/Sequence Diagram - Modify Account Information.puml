@@ -1,0 +1,37 @@
+@startuml
+title Modify Account Information
+
+actor User
+participant Application
+participant AccountSettingsPage
+participant ModifyAccountPage
+participant Validation
+participant Database
+
+User -> Application: Open Application
+activate Application
+Application -> AccountSettingsPage: Navigate to Account Settings
+activate AccountSettingsPage
+AccountSettingsPage -> User: Display Account Settings
+User -> AccountSettingsPage: Select "Modify Account Information"
+AccountSettingsPage -> ModifyAccountPage: Redirect to Modify Account Page
+activate ModifyAccountPage
+ModifyAccountPage -> User: Display Modify Account Form
+User -> ModifyAccountPage: Update name and/or password
+User -> ModifyAccountPage: Ensure accuracy of information
+User -> ModifyAccountPage: Press "Modify" button
+ModifyAccountPage -> Validation: Validate updated information
+activate Validation
+Validation --> ModifyAccountPage: Information validation result
+deactivate Validation
+ModifyAccountPage -> Database: Update account information
+activate Database
+Database --> ModifyAccountPage: Update success
+deactivate Database
+ModifyAccountPage --> Application: Display confirmation message
+Application --> User: Display confirmation message
+deactivate ModifyAccountPage
+deactivate AccountSettingsPage
+deactivate Application
+
+@enduml

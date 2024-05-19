@@ -1,0 +1,28 @@
+@startuml
+class User {
+  +name: String
+  +email: String
+  +password: String
+  +createAccount(): void
+  +login(): void
+  +cancelAccount(): void
+  +modifyAccountInformation(): void
+}
+
+class Material {
+  +photo: Image
+  +details: String
+  +addMaterial(): void
+  +viewMaterialList(): void
+  +removeMaterial(): void
+  +updateMaterialInformation(): void
+}
+
+class Account {
+  +user: User
+  +materialList: Material[]
+}
+
+User "1" -- "1" Account : has >
+Account "1" -- "*" Material : manages >
+@enduml

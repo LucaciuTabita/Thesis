@@ -1,0 +1,32 @@
+@startuml
+title User Login
+
+actor User
+participant Application
+participant WelcomePage
+participant LoginPage
+participant Database
+
+User -> Application: Open Application
+activate Application
+Application -> WelcomePage: Prompt to Welcome Page
+activate WelcomePage
+WelcomePage -> User: Display Welcome Page
+User -> WelcomePage: Choose "LOGIN" or "SIGN UP"
+User -> WelcomePage: Select "LOGIN"
+WelcomePage -> LoginPage: Redirect to Login Page
+activate LoginPage
+LoginPage -> User: Display Login Form
+User -> LoginPage: Enter email, password
+User -> LoginPage: Ensure accuracy of information
+User -> LoginPage: Press "LOGIN" button
+LoginPage -> Database: Verify login credentials
+activate Database
+Database --> LoginPage: Validation success
+deactivate Database
+deactivate LoginPage
+deactivate WelcomePage
+Application --> User: Redirect to Homepage
+deactivate Application
+
+@enduml

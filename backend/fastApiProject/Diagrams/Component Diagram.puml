@@ -1,0 +1,22 @@
+@startuml
+package "Frontend" {
+  [User Interface]
+  [Camera Interface]
+}
+
+cloud "Backend Server" {
+  [Account Management]
+  [Material List]
+}
+
+database "Database" {
+  [User Data]
+  [Material Data]
+}
+
+[User Interface] --> [Account Management]
+[User Interface] --> [Material List]
+[Camera Interface] --> [Material List]
+[Account Management] --> [User Data]
+[Material List] --> [Material Data]
+@enduml

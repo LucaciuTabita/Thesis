@@ -1,0 +1,33 @@
+@startuml
+title Account Cancellation
+
+actor User
+participant Application
+participant AccountSettingsPage
+participant ConfirmationDialog
+participant Database
+
+User -> Application: Open Application
+activate Application
+Application -> AccountSettingsPage: Navigate to Account Settings
+activate AccountSettingsPage
+AccountSettingsPage -> User: Display Account Settings
+User -> AccountSettingsPage: Select "Cancel Account"
+AccountSettingsPage -> ConfirmationDialog: Display Confirmation Dialog
+activate ConfirmationDialog
+ConfirmationDialog -> User: Prompt for confirmation
+User -> ConfirmationDialog: Confirm cancellation
+ConfirmationDialog --> AccountSettingsPage: Confirmation received
+deactivate ConfirmationDialog
+AccountSettingsPage -> Database: Initiate account cancellation
+activate Database
+Database --> AccountSettingsPage: Account marked for deletion
+deactivate Database
+AccountSettingsPage -> Application: Display confirmation message
+Application --> User: Display confirmation message
+Application --> User: Logout
+Application --> User: Clear session data
+deactivate AccountSettingsPage
+deactivate Application
+
+@enduml
