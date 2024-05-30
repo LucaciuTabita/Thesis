@@ -4,6 +4,9 @@ class MaterialCreate(BaseModel):
     image: str
     details: str
 
+class MaterialUpdate(BaseModel):
+    details: str
+
 class MaterialResponse(BaseModel):
     id: int
     user_id: int
@@ -12,3 +15,7 @@ class MaterialResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+class UpdatePasswordRequest(BaseModel):
+    current_password: str
+    new_password: str

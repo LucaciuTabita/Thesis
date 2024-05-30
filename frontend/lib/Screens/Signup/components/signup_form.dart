@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 
 import '../../../components/already_have_an_account_acheck.dart';
 import '../../../constants.dart';
+import '../../../services/auth_service.dart';
 import '../../Homepage/homepage_screen.dart';
 import '../../Login/login_screen.dart';
 
@@ -33,38 +34,18 @@ class _SignUpFormState extends State<SignUpForm> {
       final email = _emailController.text.trim();
       final password = _passwordController.text.trim();
 
-      final response = await http.post(
-        Uri.parse('$baseUrl/auth/'),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: jsonEncode(<String, String>{
-          'name': name,
-          'username': email,
-          'password': password,
-        }),
-      );
-
-      if (response.statusCode == 201) {
-        // Signup successful, navigate to HomePageScreen
+      try {
+        await AuthService.signUp(name, email, password);
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
             builder: (context) => HomepageScreen(),
           ),
         );
-      } else if (response.statusCode == 400) {
-        // Account with email already exists, show corresponding snackbar or alert
+      } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('An account with this email already exists.'),
-          ),
-        );
-      } else {
-        // Signup failed, show generic error message
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Signup failed. Please try again.'),
+          SnackBar(
+            content: Text(e.toString()),
           ),
         );
       }

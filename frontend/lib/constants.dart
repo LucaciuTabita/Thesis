@@ -11,8 +11,8 @@ const double defaultPadding = 16.0;
  // Home Address Brusturi
  // const String baseUrl = 'http://192.168.1.104:8080';
 
- // UBB Address
- // const String baseUrl = 'http://172.30.248.219:8080';
+ // Kogalniceanu UBB Address
+ // const String baseUrl = 'http://192.168.10.190:8080';
 
  // Mateinfo FSEGA Address
- // const String baseUrl = 'http://172.30.248.224:8080';
+ // const String baseUrl = 'http://192.168.1.235:8080';
