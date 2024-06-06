@@ -1,37 +1,66 @@
 @startuml
-title Modify Account Information
 
 actor User
-participant Application
-participant AccountSettingsPage
-participant ModifyAccountPage
-participant Validation
-participant Database
 
-User -> Application: Open Application
-activate Application
-Application -> AccountSettingsPage: Navigate to Account Settings
-activate AccountSettingsPage
-AccountSettingsPage -> User: Display Account Settings
-User -> AccountSettingsPage: Select "Modify Account Information"
-AccountSettingsPage -> ModifyAccountPage: Redirect to Modify Account Page
-activate ModifyAccountPage
-ModifyAccountPage -> User: Display Modify Account Form
-User -> ModifyAccountPage: Update name and/or password
-User -> ModifyAccountPage: Ensure accuracy of information
-User -> ModifyAccountPage: Press "Modify" button
-ModifyAccountPage -> Validation: Validate updated information
-activate Validation
-Validation --> ModifyAccountPage: Information validation result
-deactivate Validation
-ModifyAccountPage -> Database: Update account information
-activate Database
-Database --> ModifyAccountPage: Update success
-deactivate Database
-ModifyAccountPage --> Application: Display confirmation message
-Application --> User: Display confirmation message
-deactivate ModifyAccountPage
-deactivate AccountSettingsPage
-deactivate Application
+box "Frontend" #LightBlue
+    participant HomepageScreen as HS
+    participant ModifyPasswordScreen as MPS
+    participant AuthService as AS
+end box
+
+box "Backend" #LightYellow
+    participant UsersRouter as UR
+    participant UsersService as US
+    participant Database as DB
+end box
+
+User -> HS: Open application
+activate HS
+HS -> User: Display "Account Settings"
+User -> HS: Navigate to Account Settings
+HS -> MPS: Display Modify Password Page
+deactivate HS
+activate MPS
+MPS -> User: Prompt for updated password
+User -> MPS: Enter updated password
+User -> MPS: Press "Modify" button
+MPS -> AS: Submit updated password
+deactivate MPS
+activate AS
+AS -> UR: API Call for Modify Password
+deactivate AS
+activate UR
+UR -> US: Forward updated password
+deactivate UR
+activate US
+US -> US: Validate updated password
+alt Validation failed
+    US -> UR: Send validation error
+    UR -> AS: Send validation error
+    AS -> MPS: Display validation error
+    deactivate US
+    deactivate UR
+    deactivate AS
+    activate MPS
+else Validation succeeded
+    US -> DB: Update password
+    activate DB
+    DB -> US: Confirm password updated
+    deactivate DB
+    US -> UR: Confirm update success
+    activate UR
+    UR -> AS: Send update confirmation
+    deactivate US
+    deactivate UR
+    activate AS
+    AS -> MPS: Display update success message
+    deactivate AS
+    activate MPS
+    MPS -> HS: Navigate back to Homepage
+    deactivate MPS
+    activate HS
+    HS -> User: Display confirmation message
+    deactivate HS
+end
 
 @enduml

@@ -72,4 +72,46 @@ class AuthService {
     final payload = jsonDecode(utf8.decode(base64Url.decode(base64Url.normalize(token.split('.')[1]))));
     return payload['id'];
   }
+
+  static Future<void> updatePassword(String currentPassword, String newPassword) async {
+    final token = await AuthService.getToken();
+    if (token == null) {
+      throw Exception('No token found');
+    }
+
+    final response = await http.put(
+      Uri.parse('$baseUrl/auth/update_password'),  // Ensure this URL matches the backend
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode({
+        'current_password': currentPassword,
+        'new_password': newPassword,
+      }),
+    );
+
+    if (response.statusCode != 200) {
+      final responseData = jsonDecode(response.body);
+      throw Exception(responseData['detail'] ?? 'Failed to update password');
+    }
+  }
+
+  static Future<void> deleteAccount() async {
+    final token = await AuthService.getToken();
+    if (token == null) {
+      throw Exception('No token found');
+    }
+
+    final response = await http.delete(
+      Uri.parse('$baseUrl/auth/delete_account'),
+      headers: <String, String>{
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode != 204) {
+      throw Exception('Failed to delete account');
+    }
+  }
 }

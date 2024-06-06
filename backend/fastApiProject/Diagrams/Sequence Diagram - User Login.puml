@@ -1,32 +1,66 @@
 @startuml
-title User Login
 
 actor User
-participant Application
-participant WelcomePage
-participant LoginPage
-participant Database
 
-User -> Application: Open Application
-activate Application
-Application -> WelcomePage: Prompt to Welcome Page
-activate WelcomePage
-WelcomePage -> User: Display Welcome Page
-User -> WelcomePage: Choose "LOGIN" or "SIGN UP"
-User -> WelcomePage: Select "LOGIN"
-WelcomePage -> LoginPage: Redirect to Login Page
-activate LoginPage
-LoginPage -> User: Display Login Form
-User -> LoginPage: Enter email, password
-User -> LoginPage: Ensure accuracy of information
-User -> LoginPage: Press "LOGIN" button
-LoginPage -> Database: Verify login credentials
-activate Database
-Database --> LoginPage: Validation success
-deactivate Database
-deactivate LoginPage
-deactivate WelcomePage
-Application --> User: Redirect to Homepage
-deactivate Application
+box "Frontend" #LightBlue
+    participant WelcomeScreen as WS
+    participant LoginScreen as LS
+    participant AuthService as AS
+    participant Homepage as HP
+end box
+
+box "Backend" #LightYellow
+    participant UsersRouter as UR
+    participant UsersService as US
+    participant Database as DB
+end box
+
+User -> WS: Open application
+activate WS
+WS -> User: Display "LOGIN" and "SIGN UP" options
+User -> WS: Select "LOGIN"
+WS -> LS: Navigate to LoginScreen
+deactivate WS
+activate LS
+LS -> User: Display Login Form
+User -> LS: Enter email, password
+User -> LS: Press "LOGIN" button
+LS -> AS: Submit Login Data
+deactivate LS
+activate AS
+AS -> UR: API Call for Login
+deactivate AS
+activate UR
+UR -> US: Forward Login Data
+deactivate UR
+activate US
+US -> US: Validate Login Credentials
+alt Credentials validation failed
+    US -> UR: Send validation error
+    UR -> AS: Send validation error
+    AS -> LS: Display validation error
+    deactivate US
+    deactivate UR
+    deactivate AS
+    activate LS
+else Credentials validation succeeded
+    US -> DB: Fetch User Data
+    activate DB
+    DB -> US: Return User Data
+    deactivate DB
+    US -> UR: Confirm User Login
+    activate UR
+    UR -> AS: Send Login Confirmation
+    deactivate UR
+    activate AS
+    AS -> LS: Update Form with Confirmation
+    deactivate AS
+    activate LS
+    LS -> HP: Navigate to Homepage
+    deactivate LS
+    activate HP
+    HP -> User: Display application features
+    deactivate HP
+end
 
 @enduml

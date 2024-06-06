@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:frontendtabita/services/api_service.dart';
+import 'package:frontendtabita/services/auth_service.dart';
 
 class ModifyPasswordScreen extends StatefulWidget {
   @override
@@ -15,7 +15,7 @@ class _ModifyPasswordScreenState extends State<ModifyPasswordScreen> {
   Future<void> _updatePassword() async {
     if (_formKey.currentState!.validate()) {
       try {
-        await ApiService.updatePassword(
+        await AuthService.updatePassword(
           _currentPasswordController.text.trim(),
           _newPasswordController.text.trim(),
         );

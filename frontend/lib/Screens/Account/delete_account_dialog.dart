@@ -19,7 +19,7 @@ class DeleteAccountDialog extends StatelessWidget {
         TextButton(
           onPressed: () async {
             try {
-              await ApiService.deleteAccount();
+              await AuthService.deleteAccount();
               await AuthService.logout();
               Navigator.pushReplacement(
                 context,

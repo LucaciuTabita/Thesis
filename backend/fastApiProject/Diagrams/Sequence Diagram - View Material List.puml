@@ -1,23 +1,54 @@
 @startuml
-title View Material List
 
 actor User
-participant Application
-participant HomePage
-participant MaterialList
 
-User -> Application: Open Application
-activate Application
-Application -> User: Redirect to Homepage (if logged in)
-activate User
-User -> HomePage: Display Homepage
-activate HomePage
-HomePage -> MaterialList: Retrieve Material List
-activate MaterialList
-MaterialList --> HomePage: Send Material List
-deactivate MaterialList
-HomePage --> User: Display Material List
-deactivate HomePage
-deactivate User
-deactivate Application
+box "Frontend" #LightBlue
+    participant Application as App
+    participant HomepageScreen as HS
+    participant ApiService as AS
+end box
+
+box "Backend" #LightYellow
+    participant MaterialsRouter as MR
+    participant MaterialsService as MS
+    participant Database as DB
+end box
+
+User -> App: Open application
+activate App
+App -> User: Check if connected
+alt User is connected
+    App -> HS: Navigate to Homepage
+    deactivate App
+    activate HS
+    HS -> AS: Request list of materials
+    deactivate HS
+    activate AS
+    AS -> MR: API Call to get materials
+    deactivate AS
+    activate MR
+    MR -> MS: Fetch materials
+    deactivate MR
+    activate MS
+    MS -> DB: Retrieve materials from DB
+    activate DB
+    DB -> MS: Return materials
+    deactivate DB
+    MS -> MR: Return materials
+    activate MR
+    MR -> AS: Return materials
+    deactivate MS
+    deactivate MR
+    activate AS
+    AS -> HS: Return materials
+    deactivate AS
+    activate HS
+    HS -> User: Display list of materials
+    User -> HS: View material details
+    deactivate HS
+else User is not connected
+    App -> User: Display login screen
+    deactivate App
+end
+
 @enduml

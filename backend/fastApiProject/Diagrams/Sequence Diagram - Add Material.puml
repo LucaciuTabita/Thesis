@@ -1,41 +1,80 @@
 @startuml
+
 actor User
-participant "HomepageScreen" as Homepage
-participant "CameraScreen" as Camera
-participant "DisplayPictureScreen" as Display
-participant "ImagePicker/Camera" as Picker
-participant ApiService
-participant "FastAPI Server" as Server
-participant "Materials Router/Controller" as addFunc
-participant "Materials Service" as createFunc
-participant Database
 
-User -> Homepage: Tap "Upload a photo" or "Take a photo"
-Homepage -> User: Show dialog with options
-User -> Homepage: Select "Take a photo"
-Homepage -> Camera: Navigate to CameraScreen
-Camera -> Picker: Take photo
-Picker -> Camera: Return photo
-Camera -> Display: Navigate to DisplayPictureScreen with photo
-User -> Display: Tap approval button
-Display -> ApiService: Call addMaterial with base64 image
-ApiService -> Server: Send POST request with base64 image
-Server -> addFunc: Call add_material(MaterialCreate, Session)
+box "Frontend" #LightBlue
+    participant HomepageScreen as HS
+    participant CameraScreen as CS
+    participant DisplayPictureScreen as DPS
+    participant ApiService as AS
+end box
 
-addFunc -> User: Check if user is authenticated
-alt User is not authenticated
-    User -> addFunc: Raise HTTPException (401)
-else User is authenticated
-    User -> addFunc: User is authenticated
-    addFunc -> createFunc: Call create_material(db, material, user['id'])
-    createFunc -> Database: Interact with database to create new material record
-    Database -> createFunc: Return newly created material
-    createFunc -> addFunc: Return newly created material
+box "Backend" #LightYellow
+    participant MaterialsRouter as MR
+    participant PredictionRouter as PR
+    participant MaterialsService as MS
+    participant Database as DB
+end box
+
+User -> HS: Open application
+activate HS
+HS -> User: Display list of materials
+User -> HS: Select camera button
+HS -> User: Display dialog (Take photo / Upload)
+User -> HS: Select "Take photo"
+HS -> CS: Activate camera
+deactivate HS
+activate CS
+CS -> User: Prompt to capture photo
+User -> CS: Capture photo
+CS -> DPS: Display captured photo
+deactivate CS
+activate DPS
+DPS -> User: Review photo quality
+alt User approves photo
+    User -> DPS: Confirm selection
+    DPS -> AS: Upload photo
+    deactivate DPS
+    activate AS
+    AS -> MR: API Call to add material
+    deactivate AS
+    activate MR
+    MR -> PR: Process photo
+    deactivate MR
+    activate PR
+    PR -> MS: Analyze photo
+    deactivate PR
+    activate MS
+    MS -> DB: Save material data
+    activate DB
+    DB -> MS: Confirm data saved
+    deactivate DB
+    MS -> MR: Confirm material added
+    activate MR
+    MR -> AS: Confirm material added
+    deactivate MS
+    deactivate MR
+    activate AS
+    AS -> DPS: Display success message
+    deactivate AS
+    activate DPS
+    DPS -> HS: Update materials list
+    deactivate DPS
+    activate HS
+    HS -> User: Display updated materials list
+else User disapproves photo
+    User -> DPS: Reject photo
+    DPS -> User: Prompt to retake or cancel
+    alt User retakes photo
+        User -> DPS: Select retake
+        DPS -> CS: Reactivate camera
+        deactivate DPS
+        activate CS
+    else User cancels process
+        User -> DPS: Select cancel
+        deactivate DPS
+    end
 end
+deactivate HS
 
-addFunc -> Server: Return new material data
-Server -> ApiService: Return HTTP response with new material data
-ApiService -> Display: Return new material data
-Display -> Homepage: Navigate back to HomepageScreen
-Homepage -> User: Display new material in list
 @enduml

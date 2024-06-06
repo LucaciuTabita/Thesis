@@ -1,34 +1,61 @@
 @startuml
-title Update Material Information
 
 actor User
-participant Application
-participant HomePage
-participant MaterialList
-participant UpdateMaterialPage
-participant Validation
 
-User -> Application: Open Application
-activate Application
-Application -> User: Redirect to Homepage
-User -> HomePage: View Material List
-activate HomePage
-HomePage -> MaterialList: Choose Material
-activate MaterialList
-MaterialList -> User: Display Update Information Option
-User -> MaterialList: Select 'Update Information'
-MaterialList -> UpdateMaterialPage: Redirect to Update Material Page
-activate UpdateMaterialPage
-UpdateMaterialPage -> User: Display Material Information Form
-User -> UpdateMaterialPage: Modify Information
-User -> UpdateMaterialPage: Press 'Update' Button
-UpdateMaterialPage -> Validation: Validate Updated Information
-activate Validation
-Validation --> UpdateMaterialPage: Validation Result
-deactivate Validation
-UpdateMaterialPage --> MaterialList: Material Information Updated
-deactivate UpdateMaterialPage
-deactivate MaterialList
-deactivate HomePage
-deactivate Application
+box "Frontend" #LightBlue
+    participant HomepageScreen as HS
+    participant ModifyMaterialScreen as MMS
+    participant ApiService as AS
+end box
+
+box "Backend" #LightYellow
+    participant MaterialsRouter as MR
+    participant MaterialsService as MS
+    participant Database as DB
+end box
+
+User -> HS: Open application
+activate HS
+HS -> User: Check if connected
+alt User is connected
+    HS -> User: Display list of materials
+    User -> HS: Choose material
+    User -> HS: Press edit icon
+    HS -> MMS: Display modify material screen
+    deactivate HS
+    activate MMS
+    MMS -> User: Modify material information
+    User -> MMS: Select 'Update'
+    MMS -> AS: Submit updated information
+    deactivate MMS
+    activate AS
+    AS -> MR: API Call to update material information
+    deactivate AS
+    activate MR
+    MR -> MS: Forward updated information
+    deactivate MR
+    activate MS
+    MS -> DB: Update material information
+    activate DB
+    DB -> MS: Confirm information updated
+    deactivate DB
+    MS -> MR: Confirm update success
+    activate MR
+    MR -> AS: Confirm update success
+    deactivate MS
+    deactivate MR
+    activate AS
+    AS -> MMS: Display update success message
+    deactivate AS
+    activate MMS
+    MMS -> HS: Navigate back to Homepage
+    deactivate MMS
+    activate HS
+    HS -> User: Display updated materials list
+    deactivate HS
+else User is not connected
+    HS -> User: Display login screen
+    deactivate HS
+end
+
 @enduml

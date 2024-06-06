@@ -1,27 +1,58 @@
 @startuml
-title Remove Material
 
 actor User
-participant Application
-participant HomePage
-participant MaterialList
-participant RemoveConfirmation
 
-User -> Application: Open Application
-activate Application
-Application -> User: Redirect to Homepage
-User -> HomePage: View Material List
-activate HomePage
-HomePage -> MaterialList: Choose Material
-activate MaterialList
-MaterialList -> User: Display Remove Option
-User -> MaterialList: Select 'Remove'
-MaterialList -> RemoveConfirmation: Confirm Removal
-activate RemoveConfirmation
-RemoveConfirmation --> MaterialList: Removal Confirmed
-deactivate RemoveConfirmation
-MaterialList --> HomePage: Material Removed
-deactivate MaterialList
-deactivate HomePage
-deactivate Application
+box "Frontend" #LightBlue
+    participant Application as App
+    participant HomepageScreen as HS
+    participant ApiService as AS
+end box
+
+box "Backend" #LightYellow
+    participant MaterialsRouter as MR
+    participant MaterialsService as MS
+    participant Database as DB
+end box
+
+User -> App: Open application
+activate App
+App -> User: Check if connected
+alt User is connected
+    App -> HS: Navigate to Homepage
+    deactivate App
+    activate HS
+    HS -> User: Display list of materials
+    User -> HS: Choose material
+    User -> HS: Select 'Remove' for chosen material
+    HS -> User: Confirm removal action
+    User -> HS: Confirm removal
+    HS -> AS: Request to remove material
+    deactivate HS
+    activate AS
+    AS -> MR: API Call to remove material
+    deactivate AS
+    activate MR
+    MR -> MS: Remove material
+    deactivate MR
+    activate MS
+    MS -> DB: Delete material from DB
+    activate DB
+    DB -> MS: Confirm material deleted
+    deactivate DB
+    MS -> MR: Confirm material removed
+    activate MR
+    MR -> AS: Confirm material removed
+    deactivate MS
+    deactivate MR
+    activate AS
+    AS -> HS: Confirm material removed
+    deactivate AS
+    activate HS
+    HS -> User: Update materials list
+    deactivate HS
+else User is not connected
+    App -> User: Display login screen
+    deactivate App
+end
+
 @enduml

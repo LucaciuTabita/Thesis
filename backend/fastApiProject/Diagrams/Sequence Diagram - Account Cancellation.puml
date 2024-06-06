@@ -1,33 +1,56 @@
 @startuml
-title Account Cancellation
 
 actor User
-participant Application
-participant AccountSettingsPage
-participant ConfirmationDialog
-participant Database
 
-User -> Application: Open Application
-activate Application
-Application -> AccountSettingsPage: Navigate to Account Settings
-activate AccountSettingsPage
-AccountSettingsPage -> User: Display Account Settings
-User -> AccountSettingsPage: Select "Cancel Account"
-AccountSettingsPage -> ConfirmationDialog: Display Confirmation Dialog
-activate ConfirmationDialog
-ConfirmationDialog -> User: Prompt for confirmation
-User -> ConfirmationDialog: Confirm cancellation
-ConfirmationDialog --> AccountSettingsPage: Confirmation received
-deactivate ConfirmationDialog
-AccountSettingsPage -> Database: Initiate account cancellation
-activate Database
-Database --> AccountSettingsPage: Account marked for deletion
-deactivate Database
-AccountSettingsPage -> Application: Display confirmation message
-Application --> User: Display confirmation message
-Application --> User: Logout
-Application --> User: Clear session data
-deactivate AccountSettingsPage
-deactivate Application
+box "Frontend" #LightBlue
+    participant HomepageScreen as HS
+    participant DeleteAccountDialog as DAD
+    participant AuthService as AS
+end box
+
+box "Backend" #LightYellow
+    participant UsersRouter as UR
+    participant UsersService as US
+    participant Database as DB
+end box
+
+User -> HS: Open application
+activate HS
+HS -> User: Display "Account Settings"
+User -> HS: Navigate to Account Settings
+HS -> DAD: Display Delete Account Dialog
+deactivate HS
+activate DAD
+DAD -> User: Prompt for confirmation
+User -> DAD: Confirm cancellation
+DAD -> AS: Initiate account cancellation
+deactivate DAD
+activate AS
+AS -> UR: API Call for Account Cancellation
+deactivate AS
+activate UR
+UR -> US: Forward cancellation request
+deactivate UR
+activate US
+US -> DB: Mark account for deletion
+activate DB
+DB -> US: Confirm account marked for deletion
+deactivate DB
+US -> UR: Confirm account cancellation
+activate UR
+UR -> AS: Send cancellation confirmation
+deactivate US
+deactivate UR
+activate AS
+AS -> DAD: Display cancellation confirmation
+deactivate AS
+activate DAD
+DAD -> HS: Navigate back to Homepage
+deactivate DAD
+activate HS
+HS -> User: Display confirmation message
+HS -> User: Logout
+HS -> HS: Clear session data
+deactivate HS
 
 @enduml
